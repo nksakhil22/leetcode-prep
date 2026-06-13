@@ -1,0 +1,56 @@
+
+### Iterative Approach
+
+I use a stack to manually store the current state. Each state contains the current combination, the remaining target, and the index from where I should continue choosing candidates. At every step, I pop one state from the stack, check if the remaining target is `0`, and if yes, I add the combination to the result. If the remaining target is still positive, I try adding candidates from the current index onward. Since the same candidate can be reused, I keep the next state’s index as `i` instead of `i + 1`.
+
+---
+
+### Solution
+
+cpp
+class Solution {
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> result;
+
+        stack<pair<vector<int>, pair<int, int>>> st;
+
+        st.push({{}, {target, 0}});
+
+        while (!st.empty()) {
+            vector<int> combination = st.top().first;
+            int remaining = st.top().second.first;
+            int start = st.top().second.second;
+
+            st.pop();
+
+            if (remaining == 0) {
+                result.push_back(combination);
+                continue;
+            }
+
+            if (remaining < 0) {
+                continue;
+            }
+
+            for (int i = start; i < candidates.size(); i++) {
+                vector<int> newCombination = combination;
+
+                newCombination.push_back(candidates[i]);
+
+                st.push({newCombination, {remaining - candidates[i], i}});
+            }
+        }
+
+        return result;
+    }
+};
+
+
+### Complexity
+
+Time Complexity: O(N^(T/M))
+Where N is the number of candidates, T is the target, and M is the smallest candidate.
+
+Space Complexity: O(N^(T/M))
+Because the stack can store many partial combinations in the worst case.
