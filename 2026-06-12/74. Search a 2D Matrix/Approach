@@ -1,0 +1,61 @@
+Approach
+
+Since each row is sorted and the first element of every row is greater than the last element of the previous row, we can think of the entire matrix as a single sorted 1D array.
+
+Instead of searching row by row, I perform a binary search. For any index mid, I can convert it back to its corresponding row and column using:
+
+
+row = mid / n
+col = mid % n
+
+
+This way, I can treat the matrix like one large sorted array without actually creating a new array. For each middle position found during binary search, I convert it back to its corresponding row and column and check the value. If the value matches the target, I return `true`. If the value is smaller than the target, I know the target can only be on the right side, so I move my search there. Otherwise, I search the left side. I keep narrowing down the search space until I either find the target or exhaust all possibilities.
+
+This gives a logarithmic search time over all elements in the matrix.
+
+---
+
+### Solution
+
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+
+        int rows = matrix.size();
+        int cols = matrix[0].size();
+
+        int left = 0;
+        int right = rows * cols - 1;
+
+        while (left <= right) {
+
+            int mid = left + (right - left) / 2;
+
+            int row = mid / cols;
+            int col = mid % cols;
+
+            int value = matrix[row][col];
+
+            if (value == target) {
+                return true;
+            }
+            else if (value < target) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+
+        return false;
+    }
+};
+
+
+### Complexity
+
+Time Complexity: O(log(m * n))
+Binary search is performed over all m * n elements, and the search space is cut in half during each iteration.
+
+Space Complexity: O(1)
+Only a few variables are used, regardless of the size of the matrix.
